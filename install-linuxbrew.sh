@@ -102,12 +102,18 @@ sudo usermod -aG "$BREW_GROUP" "root" 2>/dev/null || true
 # Download and install Homebrew
 log_info "Downloading and installing Homebrew..."
 
-# Clone Homebrew
-if [ ! -d "$BREW_PREFIX/Homebrew" ]; then
-    sudo -u "$BREW_USER" git clone https://github.com/Homebrew/brew "$BREW_PREFIX/Homebrew"
-else
+# Clone Homebrew (check if it's a valid git repo, not just if directory exists)
+if [ -d "$BREW_PREFIX/Homebrew/.git" ]; then
     log_info "Homebrew already cloned, updating..."
     sudo -u "$BREW_USER" git -C "$BREW_PREFIX/Homebrew" pull || true
+else
+    # Remove directory if it exists but isn't a valid git repo
+    if [ -d "$BREW_PREFIX/Homebrew" ]; then
+        log_warn "Removing invalid Homebrew directory..."
+        sudo rm -rf "$BREW_PREFIX/Homebrew"
+    fi
+    log_info "Cloning Homebrew..."
+    sudo -u "$BREW_USER" git clone https://github.com/Homebrew/brew "$BREW_PREFIX/Homebrew"
 fi
 
 # Create the bin directory and symlink
