@@ -76,6 +76,8 @@ fi
 log_info "Creating Homebrew directory structure..."
 sudo mkdir -p "$BREW_PREFIX"
 sudo chown -R "$BREW_USER:$BREW_GROUP" "$BREW_HOME"
+# Make home directory traversable by all users
+sudo chmod 755 "$BREW_HOME"
 
 # Add all existing users to the linuxbrew group
 log_info "Adding existing users to linuxbrew group..."
